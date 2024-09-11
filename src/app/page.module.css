@@ -1,0 +1,47 @@
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.textContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2; /* Increased from 1 to 2 */
+}
+
+.mainText {
+  font-size: 8vw;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.3); /* Increased opacity from 0.1 to 0.3 */
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.7); /* Increased shadow opacity from 0.5 to 0.7 */
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.subText {
+  font-size: 2vw;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.8); /* Increased opacity from 0.6 to 0.8 */
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0.05em;
+  margin: 10px 0;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.subText:nth-child(2) { animation-delay: 0.5s; }
+.subText:nth-child(3) { animation-delay: 1s; }
+.subText:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
