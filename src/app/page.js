@@ -12,7 +12,9 @@ export default function Home() {
         <h1 className={styles.mainText}>txnio</h1>
         <p className={styles.subText}>allow yourself to be infinite.</p>
       </div>
-      <Figure8Particles thickness={1.6} />
+      <client-only>
+        <Figure8Particles thickness={1.6} />
+      </client-only>
     </div>
   );
 }
