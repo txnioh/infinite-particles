@@ -4,6 +4,8 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+const OrbitControls = dynamic(() => import('three/examples/jsm/controls/OrbitControls').then(mod => mod.OrbitControls), { ssr: false });
+
 const PARTICLE_COUNT = 3000;
 const BACKGROUND_PARTICLE_COUNT = 1000;
 
