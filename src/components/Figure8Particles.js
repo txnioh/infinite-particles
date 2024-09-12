@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const PARTICLE_COUNT = 3000;
+const PARTICLE_COUNT = 4000;
 const BACKGROUND_PARTICLE_COUNT = 1000;
 
 const Figure8Particles = ({ thickness }) => {
@@ -28,7 +28,7 @@ const Figure8Particles = ({ thickness }) => {
     camera.position.z = 0;   // Move camera forward in z-axis
     camera.lookAt(0, 0, 0);  // Make camera look at the center of the scene
 
-    const targetCameraPosition = new THREE.Vector3(-40, 0, 0);
+    const targetCameraPosition = new THREE.Vector3(-10, 0, 0);
     let cameraAnimationComplete = false;
 
     const curve = new THREE.Curve();
