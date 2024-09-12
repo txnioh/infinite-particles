@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const PARTICLE_COUNT = 4000;
+const PARTICLE_COUNT = 5000;
 const BACKGROUND_PARTICLE_COUNT = 1000;
 
 const Figure8Particles = ({ thickness }) => {
