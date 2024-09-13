@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const PARTICLE_COUNT = 5000;
+const PARTICLE_COUNT = 10000;
 const BACKGROUND_PARTICLE_COUNT = 1000;
 
 const Figure8Particles = ({ thickness }) => {
@@ -72,7 +72,7 @@ const Figure8Particles = ({ thickness }) => {
 
     const material = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.002, // Increased from 0.1 to 0.12 for slightly larger particles
+      size: 0.02, // Increased from 0.002 to 0.01
       blending: THREE.AdditiveBlending,
       transparent: true,
       sizeAttenuation: true,
@@ -113,6 +113,25 @@ const Figure8Particles = ({ thickness }) => {
     const backgroundParticles = new THREE.Points(bgGeometry, bgMaterial);
     scene.add(backgroundParticles);
 
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const repelStrength = 1.5; // Increased from 0.5 to 1.0
+    const repelRadius = 8; // Increased from 3 to 5
+    const returnSpeed = 0.05; // New constant for controlling return speed
+
+    // New array to store original positions
+    const originalPositions = new Float32Array(PARTICLE_COUNT * 3);
+    for (let i = 0; i < PARTICLE_COUNT * 3; i++) {
+      originalPositions[i] = positions[i];
+    }
+
+    const handleMouseMove = (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
     const animate = () => {
       requestAnimationFrame(animate);
 
@@ -129,6 +148,9 @@ const Figure8Particles = ({ thickness }) => {
       const initialOffsets = geometry.attributes.initialOffset.array;
       const radialOffsets = geometry.attributes.radialOffset.array;
 
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects([particles, backgroundParticles]);
+
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const i3 = i * 3;
         const t = ((initialOffsets[i] + time) % 1 + 1) % 1;
@@ -139,9 +161,26 @@ const Figure8Particles = ({ thickness }) => {
           radialOffsets[i3 + 2]
         ).multiplyScalar(thickness * 1.2); // Increased from thickness to thickness * 1.2
         
-        positions[i3] = point.x + radialOffset.x;
-        positions[i3 + 1] = point.y + radialOffset.y;
-        positions[i3 + 2] = point.z + radialOffset.z;
+        const targetX = point.x + radialOffset.x;
+        const targetY = point.y + radialOffset.y;
+        const targetZ = point.z + radialOffset.z;
+
+        let repelForce = new THREE.Vector3(0, 0, 0);
+
+        if (intersects.length > 0) {
+          const intersectPoint = intersects[0].point;
+          const particlePos = new THREE.Vector3(positions[i3], positions[i3 + 1], positions[i3 + 2]);
+          const distance = particlePos.distanceTo(intersectPoint);
+
+          if (distance < repelRadius) {
+            repelForce = particlePos.sub(intersectPoint).normalize().multiplyScalar(repelStrength * Math.pow(1 - distance / repelRadius, 3));
+          }
+        }
+
+        // Smooth transition between current position, repel force, and target position
+        positions[i3] += (targetX + repelForce.x - positions[i3]) * returnSpeed;
+        positions[i3 + 1] += (targetY + repelForce.y - positions[i3 + 1]) * returnSpeed;
+        positions[i3 + 2] += (targetZ + repelForce.z - positions[i3 + 2]) * returnSpeed;
       }
 
       geometry.attributes.position.needsUpdate = true;
@@ -166,6 +205,7 @@ const Figure8Particles = ({ thickness }) => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
